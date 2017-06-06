@@ -105,7 +105,7 @@ body, html {
   color: #777;
 }
 
-.bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4 {
+.bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4 , .bgimg-5 {
   position: relative;
   font-family: 'Arvo', serif !important;
   background-attachment: fixed;
@@ -131,6 +131,11 @@ body, html {
 
 .bgimg-4 {
   background-image: url("./img/Community.jpg");
+  min-height: 400px;
+}
+
+.bgimg-5 {
+  background-image: url("./img/Filler.jpg");
   min-height: 400px;
 }
 
@@ -160,16 +165,9 @@ body, html {
   letter-spacing: 10px; -->
 }
 
-h3 {
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  font: 20px "Lato", sans-serif;
-  color: #111;
-}
-
 /* Turn off parallax scrolling for tablets and phones */
 @media only screen and (max-device-width: 1024px) {
-    .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4 {
+    .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4, .bgimg-5 {
         background-attachment: scroll;
     }
 }
