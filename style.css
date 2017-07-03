@@ -1,0 +1,106 @@
+body, html {
+  /*background-color: #23272A !important;*/
+  background-color: white;
+  height: 100%;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif !important;
+  color: #777;
+}
+
+@keyframes float {
+	0% {
+		/*box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);*/
+		transform: translatey(0px);
+	}
+	50% {
+		/*box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);*/
+		transform: translatey(-20px);
+	}
+	100% {
+		/*box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);*/
+		transform: translatey(0px);
+	}
+}
+
+#container {
+
+}
+
+.Big_Bubble_Middle {
+  /*background-color: grey;*/
+  /*float: center;*/
+  margin: 0 auto;
+  height: 720px;
+  width: 720px;
+
+  /*overflow: hidden;*/
+	/*box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);*/
+	/*transform: translatey(0px);*/
+	animation: float 7s ease-in-out infinite;
+}
+
+.Big_Bubble_Right {
+  /*background-color: grey;*/
+  float: right;
+  /*margin: 0 auto;*/
+  height: 720px;
+  width: 720px;
+  position: absolute;
+  right: 2%;
+
+  animation: float 7s ease-in-out infinite;
+}
+
+.Big_Bubble_Left {
+  /*background-color: pink;*/
+  float: left;
+  margin: 0 auto;
+  height: 720px;
+  width: 720px;
+  position: absolute;
+  left: 2%;
+
+  animation: float 7s ease-in-out infinite;
+}
+
+span.Heading {
+  font-family: 'Arvo', serif !important;
+  font-size: 40px;
+  color: black;
+  /*background-color: lightgrey;*/
+}
+
+p.Paragraph {
+  text-align:center;
+}
+
+div.Content_Left {
+  float: left;
+  height: 100%;
+  width: 50%;
+  /*background-color: purple;*/
+  padding: 40px;
+
+  display: flex;              /* establish flex container */
+  flex-direction: column;     /* stack flex items vertically */
+  justify-content: center;    /* center items vertically, in this case */
+  align-items: center;        /* center items horizontally, in this case */
+}
+
+div.Content_Right {
+  float: right;
+  height: 100%;
+  width: 50%;
+  /*background-color: purple;*/
+  padding: 40px;
+
+  display: flex;              /* establish flex container */
+  flex-direction: column;     /* stack flex items vertically */
+  justify-content: center;    /* center items vertically, in this case */
+  align-items: center;        /* center items horizontally, in this case */
+}
+
+div.Section {
+  width: 100%;
+  height:100vh;
+}
