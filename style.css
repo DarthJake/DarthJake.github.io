@@ -7,6 +7,13 @@ body, html {
   color: #777;
 }
 
+footer {
+  text-align: center;
+  color: rgba(169, 169, 169, 1);
+  font-size: 20px;
+  style="padding-top:1%;"
+}
+
 @keyframes float {
 	0% {
 		/*box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);*/
@@ -26,39 +33,85 @@ body, html {
 
 }
 
-.Big_Bubble_Middle {
+div.Sabercat_Bubble {
+  background-image: url("./img/Sabercat_Circle.png");
+  background-size: contain;
+   background-position: center;
+  background-repeat: no-repeat;
   /*background-color: grey;*/
-  /*float: center;*/
-  margin: 0 auto;
-  height: 720px;
-  width: 720px;
+
+  height: 100%;
+  width: auto;
 
   /*overflow: hidden;*/
 	/*box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);*/
 	/*transform: translatey(0px);*/
-	animation: float 7s ease-in-out infinite;
+	/*animation: float 7s ease-in-out infinite;*/
 }
 
-.Big_Bubble_Right {
-  /*background-color: grey;*/
+div.Engineering_Bubble {
+  background-image: url("./img/Engineering_Circle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
   float: right;
-  /*margin: 0 auto;*/
-  height: 720px;
-  width: 720px;
+  height: 100%;
+  width: 50%;
+  /*height: 720px;
+  width: 720px;*/
   position: absolute;
-  right: 2%;
+  right: 0%;
 
   animation: float 7s ease-in-out infinite;
 }
 
-.Big_Bubble_Left {
-  /*background-color: pink;*/
+div.Programming_Bubble {
+  background-image: url("./img/Programming_Circle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
   float: left;
-  margin: 0 auto;
-  height: 720px;
-  width: 720px;
+  height: 100%;
+  width: 50%;
   position: absolute;
-  left: 2%;
+  left: 4%;
+
+  animation: float 7s ease-in-out infinite;
+}
+
+div.Business_Bubble {
+  background-image: url("./img/Business_Circle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  float: right;
+  height: 100%;
+  width: 50%;
+  position: absolute;
+  right: 0%;
+
+  animation: float 7s ease-in-out infinite;
+}
+
+div.Community_Bubble {
+  background-image: url("./img/Community_Circle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  float: left;
+  height: 100%;
+  width: 50%;
+  position: absolute;
+  left: 4%;
+
+  animation: float 7s ease-in-out infinite;
+}
+
+div.Help_Us_Bubble {
+  background-image: url("./img/Help_Us_Circle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  float: right;
+  height: 100%;
+  width: 50%;
+  position: absolute;
+  right: 0%;
 
   animation: float 7s ease-in-out infinite;
 }
@@ -103,4 +156,5 @@ div.Content_Right {
 div.Section {
   width: 100%;
   height:100vh;
+  padding: 15px;
 }
