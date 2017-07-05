@@ -56,8 +56,6 @@ div.Engineering_Bubble {
   float: right;
   height: 100%;
   width: 50%;
-  /*height: 720px;
-  width: 720px;*/
   position: absolute;
   right: 0%;
 
@@ -72,7 +70,7 @@ div.Programming_Bubble {
   height: 100%;
   width: 50%;
   position: absolute;
-  left: 4%;
+  /*left: 4%;*/
 
   animation: float 7s ease-in-out infinite;
 }
@@ -98,7 +96,7 @@ div.Community_Bubble {
   height: 100%;
   width: 50%;
   position: absolute;
-  left: 4%;
+  /*left: 4%;*/
 
   animation: float 7s ease-in-out infinite;
 }
