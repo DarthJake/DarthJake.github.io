@@ -1,9 +1,11 @@
 // import './style.css' // This line causes github pages to get angry...
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
+import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/controls/OrbitControls.js';
 
 // import * as THREE from 'three';
+// import { InteractionManager } from "three.interactive";
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // Setup threejs vars
@@ -12,13 +14,22 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector( '#background' ),
 });
+const interactionManager = new InteractionManager(
+  renderer,
+  camera,
+  renderer.domElement
+);
 const controls = new OrbitControls(camera, renderer.domElement);
 
 // Setup scene/camera
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
-camera.position.set(0, 100, 50);
+camera.position.set(0, 75, 100);
+// camera.lookAt(0, 0, 0);
 renderer.render( scene, camera );
+controls.enabled = false;
+controls.autoRotate = true;
+controls.autoRotateSpeed = -1;
 
 // My Vars
 var planets = [];
@@ -47,7 +58,7 @@ scene.add( pointLight, ambientLight );
 
 // Moon
 const moonTexture = new THREE.TextureLoader().load('moon.jpg');
-const moonNormal = new THREE.TextureLoader().load('normal.jpg');
+// const moonNormal = new THREE.TextureLoader().load('normal.jpg');
 
 const moon = new THREE.Mesh(
   new THREE.SphereBufferGeometry(5, 32, 32),
@@ -70,11 +81,16 @@ function addStar() {
   scene.add(star);
 }
 
-function addPlanet(mesh, orbitRadius, orbitSpeed) {
+function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
   // Make the Planet
   var planet = mesh;
   planet.userData.orbitRadius = orbitRadius;
   planet.userData.orbitSpeed = orbitSpeed;
+  planet.addEventListener("click", (event) => {
+    event.stopPropagation();
+    console.log(`${num} was clicked.`);
+  });
+  interactionManager.add(planet);
   planets.push(planet);
   scene.add(planet);
 
@@ -91,10 +107,10 @@ function addPlanet(mesh, orbitRadius, orbitSpeed) {
 }
 
 Array(500).fill().forEach(addStar);
-addPlanet(moon.clone(true), 20, 5);
-addPlanet(moon.clone(true), 40, 10);
-addPlanet(moon.clone(true), 50, 2);
-addPlanet(moon.clone(true), 70, 0.5);
+addPlanet(moon.clone(true), 20, 5, 1);
+addPlanet(moon.clone(true), 40, 3, 2);
+addPlanet(moon.clone(true), 50, 2, 3);
+addPlanet(moon.clone(true), 70, 0.5, 4);
 
 function animate() {
   requestAnimationFrame( animate );
@@ -110,11 +126,12 @@ function animate() {
   })
 
   // Camera Animation
-  if (cameraState == 0) {
-    
-  }
+  // if (cameraState == 0) {
+  //   camera.position.setX(cameraStartX + Math.cos(time) * cameraXAmplitude)
+  // }
 
-  // controls.update();
+  interactionManager.update();
+  controls.update();
   renderer.render( scene, camera );
 }
 
