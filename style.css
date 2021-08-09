@@ -1,8 +1,17 @@
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#myName {
+  font-size: 10vh;
+  color: white;
+  position: absolute;
+  top: 10px;
+  width: 100%;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  z-index: 100;
+  display: block;
+  font-family: 'Noto Sans KR', sans-serif;
 }
