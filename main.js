@@ -72,10 +72,14 @@ const moon = new THREE.Mesh(
 
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  const material = new THREE.MeshBasicMaterial( { COLOR: 0xffffff });
+  const material = new THREE.MeshBasicMaterial();
   const star = new THREE.Mesh( geometry, material );
 
-  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread( 200 ) );
+  const [x, y, z] = [
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350)),
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(200)),
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350))
+  ];
 
   star.position.set(x, y, z);
   scene.add(star);
@@ -106,7 +110,7 @@ function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
   scene.add(orbit);
 }
 
-Array(500).fill().forEach(addStar);
+Array(650).fill().forEach(addStar);
 addPlanet(moon.clone(true), 20, 5, 1);
 addPlanet(moon.clone(true), 40, 3, 2);
 addPlanet(moon.clone(true), 50, 2, 3);
