@@ -1,4 +1,4 @@
-// import './style.css'
+// import './style.css' // This line causes github pages to get angry...
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/controls/OrbitControls.js';
@@ -6,20 +6,29 @@ import { OrbitControls } from 'https://cdn.skypack.dev/three@0.131.3/examples/js
 // import * as THREE from 'three';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+// Setup threejs vars
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector( '#background' ),
 });
+const controls = new OrbitControls(camera, renderer.domElement);
 
+// Setup scene/camera
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
-camera.position.setZ(30);
-
+camera.position.set(0, 100, 50);
 renderer.render( scene, camera );
 
+// My Vars
+var planets = [];
+var time = 0;
+var cameraState = 0;
+var cameraStartX = 0;
+var cameraStartY = 100;
+var cameraStartZ = 50;
+
+// Scene elements
 const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
 const material = new THREE.MeshStandardMaterial( { color: 0xFF6347 } );
 const torus = new THREE.Mesh( geometry, material );
@@ -32,34 +41,80 @@ pointLight.position.set(5, 5, 5);
 const ambientLight = new THREE.AmbientLight(0xffffff);
 scene.add( pointLight, ambientLight );
 
-const lightHelper = new THREE.PointLightHelper(pointLight);
-const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(lightHelper, gridHelper);
+// const lightHelper = new THREE.PointLightHelper(pointLight);
+// const gridHelper = new THREE.GridHelper(200, 50);
+// scene.add(lightHelper, gridHelper);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+// Moon
+const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+const moonNormal = new THREE.TextureLoader().load('normal.jpg');
+
+const moon = new THREE.Mesh(
+  new THREE.SphereBufferGeometry(5, 32, 32),
+  new THREE.MeshStandardMaterial( {
+    map: moonTexture
+    // , normalMap: moonNormal
+  })
+);
+// scene.add(moon);
+
 
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
   const material = new THREE.MeshBasicMaterial( { COLOR: 0xffffff });
   const star = new THREE.Mesh( geometry, material );
 
-  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread( 100 ) );
+  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread( 200 ) );
 
   star.position.set(x, y, z);
   scene.add(star);
 }
 
-Array(200).fill().forEach(addStar);
+function addPlanet(mesh, orbitRadius, orbitSpeed) {
+  // Make the Planet
+  var planet = mesh;
+  planet.userData.orbitRadius = orbitRadius;
+  planet.userData.orbitSpeed = orbitSpeed;
+  planets.push(planet);
+  scene.add(planet);
+
+  // Make the Orbit
+  var orbitPath = new THREE.Shape();
+  orbitPath.moveTo(orbitRadius, 0);
+  orbitPath.absarc(0, 0, orbitRadius, 0, 2 * Math.PI, false);
+  var orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPath.getSpacedPoints(200));
+  orbitGeometry.rotateX(THREE.Math.degToRad(90));
+  var orbit = new THREE.Line(orbitGeometry, new THREE.LineBasicMaterial({
+    color: "white"
+  }));
+  scene.add(orbit);
+}
+
+Array(500).fill().forEach(addStar);
+addPlanet(moon.clone(true), 20, 5);
+addPlanet(moon.clone(true), 40, 10);
+addPlanet(moon.clone(true), 50, 2);
+addPlanet(moon.clone(true), 70, 0.5);
 
 function animate() {
   requestAnimationFrame( animate );
+  time = Date.now() * 0.0001;
 
   torus.rotation.x += 0.01;
   torus.rotation.y += 0.005;
   torus.rotation.z += 0.01;
 
-  controls.update();
+  planets.forEach(function(planet) {
+    planet.position.x = Math.cos(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+    planet.position.z = Math.sin(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+  })
 
+  // Camera Animation
+  if (cameraState == 0) {
+    
+  }
+
+  // controls.update();
   renderer.render( scene, camera );
 }
 
