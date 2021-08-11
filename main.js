@@ -9,37 +9,143 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 // Setup threejs vars
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector( '#background' ),
-});
-const interactionManager = new InteractionManager(
-  renderer,
-  camera,
-  renderer.domElement
-);
+const renderer = new THREE.WebGLRenderer({canvas: document.querySelector( '#background' )});
+const interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 
 // My Vars
 var planets = [];
 var time = 0;
-var cameraState = 0;
+var cameraFocused = false;
 var focusedPlanetPosition = new THREE.Vector3();
-var smoothAlpha = 0;
 const cameraStartPosition = new THREE.Vector3(0, 75, 100);
+const cameraStartLook = new THREE.Vector3(0, 0, 0);
+const cameraStartMaxDistance = 125;
+const focusedDistance = 10;
+var desiredCameraPosition = cameraStartPosition;
+var desiredCameraLook = cameraStartLook;
+var desiredCameraMaxDistance = cameraStartMaxDistance;
+const acceptableError = 5;
+var interpol = 0;
 
-// Setup scene/camera/controls
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( window.innerWidth, window.innerHeight );
-camera.position.copy(cameraStartPosition);
-// camera.lookAt(0, 0, 0);
-renderer.render( scene, camera );
-controls.enabled = false;
-controls.autoRotate = true;
-controls.autoRotateSpeed = -1;
-controls.maxPolarAngle = THREE.MathUtils.degToRad(50);
-controls.saveState();
+const STATE = {
+  UNFOCUSED: 1,
+  TRANSITIONING: 2,
+  FOCUSED: 3
+}
 
+init();
+animate();
 
+function animate() {
+  requestAnimationFrame(animate);
+  time = Date.now() * 0.0001;
+
+  // Animate Torus
+  // torus.rotation.x += 0.01;
+  // torus.rotation.y += 0.005;
+  // torus.rotation.z += 0.01;
+
+  // Animate Planets
+  planets.forEach(function(planet) {
+    planet.position.x = Math.cos(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+    planet.position.z = Math.sin(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+
+    if (planet.userData.focused) {
+      planet.getWorldPosition(focusedPlanetPosition);
+
+      // controls.target = focusedPlanetPosition;
+      // controls.target.lerp(focusedPlanetPosition, smoothAlpha);
+      desiredCameraLook = focusedPlanetPosition;
+      // if (smoothAlpha < 1) {
+      //   // smoothAlpha += ((time * 0.000000001) ** 3) / 6;
+      //   smoothAlpha += (time * 0.000000001) ** 3 / 6;
+      // } else {
+      //   smoothAlpha = 1;
+      // }
+      
+      // console.log(smoothAlpha);
+      // var oldTargetPos = controls.target.clone();
+      // controls.target = focusedPlanetPosition;
+      // var dPosition = oldTargetPos.sub(controls.target);
+      // camera.position.sub(dPosition);
+
+      // controls.autoRotate = false;
+      // camera.position.copy(focusOffset(focusedPlanetPosition));
+      // console.log(`${planet.userData.num} is focused.`);
+    }
+  })
+
+  // Camera Animation
+  // if (cameraState == 0) {
+  //   camera.position.setX(cameraStartX + Math.cos(time) * cameraXAmplitude)
+  // }
+  interpolateCamera();
+  interactionManager.update();
+  controls.update();
+  renderer.render( scene, camera );
+}
+
+function interpolateCamera(){
+  // Position
+  
+  if (!closeTo(camera.position, desiredCameraPosition)) {
+    console.log(`${camera.position.toArray()} - ${desiredCameraPosition.toArray()}`);
+    if (interpol < 1) {
+      camera.position.lerp(desiredCameraPosition, interpol);
+      interpol += 0.01;
+      
+    } else {
+      camera.position.copy(desiredCameraPosition);
+    }
+  }
+
+  // Look
+  if (interpol < 1) {
+    controls.target.lerp(desiredCameraLook, interpol);
+    interpol += 0.01;
+    // console.log(`${interpol} is int.`);
+  } else {
+    controls.target.copy(desiredCameraLook);
+  }
+  
+  // Max Distance
+  // if (cameraFocused == true) {
+    if (cameraFocused == true) {
+      if (interpol < 1) {
+        controls.maxDistance = interpolateNum(controls.maxDistance, desiredCameraMaxDistance, interpol);
+        interpol += 0.01;
+      } else {
+        controls.maxDistance = desiredCameraMaxDistance;
+      }
+    } else {
+      controls.maxDistance = cameraStartMaxDistance;
+    }
+    
+  // }
+}
+
+function closeTo(vector1, vector2) {
+  var difference = new THREE.Vector3().subVectors(vector1, vector2);
+  if(difference.x > acceptableError){ return false; }
+  if(difference.y > acceptableError){ return false; }
+  if(difference.z > acceptableError){ return false; }
+  return true;
+}
+
+function interpolateNum(currentNum, desiredNum, alpha) { // Returns a num that is alpha% between the two given numbers where alpha [0, 1].
+  // console.log(`interpolate NUM! ${currentNum}, ${desiredNum}, ${alpha}`);
+  return currentNum + (desiredNum - currentNum) * alpha;
+}
+
+function resetInterpolation(){
+  interpol = 0;
+}
+
+function unfocus() {
+  desiredCameraPosition.copy(cameraStartPosition);
+  desiredCameraLook.copy(cameraStartLook);
+}
 
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
@@ -54,29 +160,33 @@ function addStar() {
 
   star.position.set(x, y, z);
   scene.add(star);
-  scene.at
 }
 
-function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
+function addPlanet(planet, orbitRadius, orbitSpeed, num) {
   // Make the Planet
-  var planet = mesh;
   planet.userData.orbitRadius = orbitRadius;
   planet.userData.orbitSpeed = orbitSpeed;
   planet.userData.focused = false;
   planet.userData.num = num;
   planet.addEventListener("click", (event) => {
     event.stopPropagation();
-    if (planet.userData.focused == true) {
-      planet.userData.focused = false;
-      controls.maxDistance = Infinity;
-      controls.reset();
-      console.log(`${num} was clicked and reset.`);
-    } else {
+    if (planet.userData.focused == false) { // If planet not focused
       console.log(`${num} was clicked and focused.`);
-      unfocusAllPlanets();
-      smoothAlpha = 0;
-      controls.maxDistance = 10;
+      unfocusAllPlanets(); // Make sure Other Planets aren't focused
+      // controls.maxDistance = 10;
+      desiredCameraMaxDistance = focusedDistance;
+      resetInterpolation();
+      cameraFocused = true;
       planet.userData.focused = true;
+    } else { // If planet is already focused
+      planet.userData.focused = false;
+      // controls.maxDistance = Infinity;
+      resetInterpolation();
+      cameraFocused = false;
+      desiredCameraMaxDistance = cameraStartMaxDistance;
+      unfocus();
+      // controls.reset();
+      console.log(`${num} was clicked and reset.`);
     }
   });
   interactionManager.add(planet);
@@ -107,95 +217,49 @@ function onWindowResize() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-window.addEventListener( 'resize', onWindowResize, false );
 
-// Scene elements
-const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
-const material = new THREE.MeshStandardMaterial( { color: 0xFF6347 } );
-const torus = new THREE.Mesh( geometry, material );
 
-scene.add( torus );
+function init() {
+  // Setup scene/camera/controls
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  camera.position.copy(cameraStartPosition);
+  // camera.lookAt(0, 0, 0);
+  controls.enabled = false;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = -1;
+  controls.maxPolarAngle = THREE.MathUtils.degToRad(50);
+  controls.maxDistance = desiredCameraMaxDistance;
+  // controls.saveState();
+  window.addEventListener('resize', onWindowResize, false);
 
-// const pointLight = new THREE.PointLight(0xffffff);
-// pointLight.position.set(5, 5, 5);
-// scene.add(pointLight);
+  // Torus
+  const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
+  const material = new THREE.MeshStandardMaterial( { color: 0xFF6347 } );
+  const torus = new THREE.Mesh( geometry, material );
+  scene.add( torus );
 
-const ambientLight = new THREE.AmbientLight(0xffffff);
-scene.add(ambientLight);
+  // Ambient Light
+  const ambientLight = new THREE.AmbientLight(0xffffff);
+  scene.add(ambientLight);
 
-// const lightHelper = new THREE.PointLightHelper(pointLight);
-// const gridHelper = new THREE.GridHelper(200, 50);
-// scene.add(lightHelper, gridHelper);
+  // Moon
+  const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+  const moon = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(5, 32, 32),
+    new THREE.MeshStandardMaterial( {
+      map: moonTexture
+    })
+  );
 
-// Moon
-const moonTexture = new THREE.TextureLoader().load('moon.jpg');
-// const moonNormal = new THREE.TextureLoader().load('normal.jpg');
-
-const moon = new THREE.Mesh(
-  new THREE.SphereBufferGeometry(5, 32, 32),
-  new THREE.MeshStandardMaterial( {
-    map: moonTexture
-    // , normalMap: moonNormal
-  })
-);
-// scene.add(moon);
-
-Array(650).fill().forEach(addStar);
-addPlanet(moon.clone(true), 20, 5, 1);
-addPlanet(moon.clone(true), 40, 3, 2);
-addPlanet(moon.clone(true), 50, 2, 3);
-addPlanet(moon.clone(true), 70, 0.5, 4);
-
-function focusOffset() {
-
+  // Make stars and Planets
+  Array(650).fill().forEach(addStar);
+  addPlanet(moon.clone(true), 20, 5, 1);
+  addPlanet(moon.clone(true), 40, 3, 2);
+  addPlanet(moon.clone(true), 50, 2, 3);
+  addPlanet(moon.clone(true), 70, 0.5, 4);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  time = Date.now() * 0.0001;
 
-  // Animate Torus
-  torus.rotation.x += 0.01;
-  torus.rotation.y += 0.005;
-  torus.rotation.z += 0.01;
 
-  // Animate Planets
-  planets.forEach(function(planet) {
-    planet.position.x = Math.cos(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
-    planet.position.z = Math.sin(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
 
-    if (planet.userData.focused) {
-      planet.getWorldPosition(focusedPlanetPosition);
-
-      // controls.target = focusedPlanetPosition;
-      controls.target.lerp(focusedPlanetPosition, smoothAlpha);
-      if (smoothAlpha < 1) {
-        // smoothAlpha += ((time * 0.000000001) ** 3) / 6;
-        smoothAlpha += (time * 0.000000001) ** 3 / 6;
-      } else {
-        smoothAlpha = 1;
-      }
-      
-      console.log(smoothAlpha);
-      // var oldTargetPos = controls.target.clone();
-      // controls.target = focusedPlanetPosition;
-      // var dPosition = oldTargetPos.sub(controls.target);
-      // camera.position.sub(dPosition);
-
-      // controls.autoRotate = false;
-      // camera.position.copy(focusOffset(focusedPlanetPosition));
-      // console.log(`${planet.userData.num} is focused.`);
-    }
-  })
-
-  // Camera Animation
-  // if (cameraState == 0) {
-  //   camera.position.setX(cameraStartX + Math.cos(time) * cameraXAmplitude)
-  // }
-
-  interactionManager.update();
-  controls.update();
-  renderer.render( scene, camera );
-}
-
-animate();
