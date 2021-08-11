@@ -21,7 +21,7 @@ const interactionManager = new InteractionManager(
 );
 const controls = new OrbitControls(camera, renderer.domElement);
 
-// Setup scene/camera
+// Setup scene/camera/controls
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 camera.position.set(0, 75, 100);
@@ -30,14 +30,80 @@ renderer.render( scene, camera );
 controls.enabled = false;
 controls.autoRotate = true;
 controls.autoRotateSpeed = -1;
+controls.saveState();
 
 // My Vars
 var planets = [];
 var time = 0;
 var cameraState = 0;
-var cameraStartX = 0;
-var cameraStartY = 100;
-var cameraStartZ = 50;
+var focusedPlanetPosition = new THREE.Vector3();
+
+function addStar() {
+  const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+  const material = new THREE.MeshBasicMaterial();
+  const star = new THREE.Mesh( geometry, material );
+
+  const [x, y, z] = [
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350)),
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(200)),
+    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350))
+  ];
+
+  star.position.set(x, y, z);
+  scene.add(star);
+  scene.at
+}
+
+function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
+  // Make the Planet
+  var planet = mesh;
+  planet.userData.orbitRadius = orbitRadius;
+  planet.userData.orbitSpeed = orbitSpeed;
+  planet.userData.focused = false;
+  planet.userData.num = num;
+  planet.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (planet.userData.focused == true) {
+      planet.userData.focused = false;
+      controls.maxDistance = Infinity;
+      controls.reset();
+      console.log(`${num} was clicked and reset.`);
+    } else {
+      console.log(`${num} was clicked and focused.`);
+      unfocusAllPlanets();
+      controls.maxDistance = 10;
+      planet.userData.focused = true;
+    }
+  });
+  interactionManager.add(planet);
+  planets.push(planet);
+  scene.add(planet);
+
+  // Make the Orbit
+  var orbitPath = new THREE.Shape();
+  orbitPath.moveTo(orbitRadius, 0);
+  orbitPath.absarc(0, 0, orbitRadius, 0, 2 * Math.PI, false);
+  var orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPath.getSpacedPoints(200));
+  orbitGeometry.rotateX(THREE.Math.degToRad(90));
+  var orbit = new THREE.Line(orbitGeometry, new THREE.LineBasicMaterial({
+    color: "white"
+  }));
+  scene.add(orbit);
+}
+
+function unfocusAllPlanets() {
+  planets.forEach(function(planet) {
+    planet.userData.focused = false;
+  });
+}
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+window.addEventListener( 'resize', onWindowResize, false );
 
 // Scene elements
 const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
@@ -46,11 +112,12 @@ const torus = new THREE.Mesh( geometry, material );
 
 scene.add( torus );
 
-const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(5, 5, 5);
+// const pointLight = new THREE.PointLight(0xffffff);
+// pointLight.position.set(5, 5, 5);
+// scene.add(pointLight);
 
 const ambientLight = new THREE.AmbientLight(0xffffff);
-scene.add( pointLight, ambientLight );
+scene.add(ambientLight);
 
 // const lightHelper = new THREE.PointLightHelper(pointLight);
 // const gridHelper = new THREE.GridHelper(200, 50);
@@ -69,64 +136,37 @@ const moon = new THREE.Mesh(
 );
 // scene.add(moon);
 
-
-function addStar() {
-  const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  const material = new THREE.MeshBasicMaterial();
-  const star = new THREE.Mesh( geometry, material );
-
-  const [x, y, z] = [
-    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350)),
-    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(200)),
-    Array(1).fill().map(() => THREE.MathUtils.randFloatSpread(350))
-  ];
-
-  star.position.set(x, y, z);
-  scene.add(star);
-}
-
-function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
-  // Make the Planet
-  var planet = mesh;
-  planet.userData.orbitRadius = orbitRadius;
-  planet.userData.orbitSpeed = orbitSpeed;
-  planet.addEventListener("click", (event) => {
-    event.stopPropagation();
-    console.log(`${num} was clicked.`);
-  });
-  interactionManager.add(planet);
-  planets.push(planet);
-  scene.add(planet);
-
-  // Make the Orbit
-  var orbitPath = new THREE.Shape();
-  orbitPath.moveTo(orbitRadius, 0);
-  orbitPath.absarc(0, 0, orbitRadius, 0, 2 * Math.PI, false);
-  var orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPath.getSpacedPoints(200));
-  orbitGeometry.rotateX(THREE.Math.degToRad(90));
-  var orbit = new THREE.Line(orbitGeometry, new THREE.LineBasicMaterial({
-    color: "white"
-  }));
-  scene.add(orbit);
-}
-
 Array(650).fill().forEach(addStar);
 addPlanet(moon.clone(true), 20, 5, 1);
 addPlanet(moon.clone(true), 40, 3, 2);
 addPlanet(moon.clone(true), 50, 2, 3);
 addPlanet(moon.clone(true), 70, 0.5, 4);
 
+function focusOffset() {
+
+}
+
 function animate() {
-  requestAnimationFrame( animate );
+  requestAnimationFrame(animate);
   time = Date.now() * 0.0001;
 
+  // Animate Torus
   torus.rotation.x += 0.01;
   torus.rotation.y += 0.005;
   torus.rotation.z += 0.01;
 
+  // Animate Planets
   planets.forEach(function(planet) {
     planet.position.x = Math.cos(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
     planet.position.z = Math.sin(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+
+    if (planet.userData.focused) {
+      planet.getWorldPosition(focusedPlanetPosition);
+      controls.target = focusedPlanetPosition;
+      // controls.autoRotate = false;
+      // camera.position.copy(focusOffset(focusedPlanetPosition));
+      // console.log(`${planet.userData.num} is focused.`);
+    }
   })
 
   // Camera Animation

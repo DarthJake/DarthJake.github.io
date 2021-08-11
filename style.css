@@ -4,7 +4,7 @@
   left: 0;
 }
 
-#myName {
+#title {
   font-size: 10vh;
   color: white;
   position: absolute;
@@ -14,4 +14,25 @@
   z-index: 100;
   display: block;
   font-family: 'Noto Sans KR', sans-serif;
+  /* animation-name: float;
+  animation-direction: alternate;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out; */
+}
+
+#hi {
+  animation-name: fadeInDown;
+  animation-duration: 5s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes float {
+  0% {top: 10px}
+  100% {top: 20px}
+}
+
+@keyframes fadeInDown {
+  0% {top: 0px}
+  100% {top: 10px}
 }
