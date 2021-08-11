@@ -1,12 +1,10 @@
-// import './style.css' // This line causes github pages to get angry...
+// import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
+// import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
+// import { OrbitControls } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/controls/OrbitControls.js';
 
-import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
-import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/controls/OrbitControls.js';
-
-// import * as THREE from 'three';
-// import { InteractionManager } from "three.interactive";
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three';
+import { InteractionManager } from "three.interactive";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // Setup threejs vars
 const scene = new THREE.Scene();
@@ -21,22 +19,27 @@ const interactionManager = new InteractionManager(
 );
 const controls = new OrbitControls(camera, renderer.domElement);
 
-// Setup scene/camera/controls
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( window.innerWidth, window.innerHeight );
-camera.position.set(0, 75, 100);
-// camera.lookAt(0, 0, 0);
-renderer.render( scene, camera );
-controls.enabled = false;
-controls.autoRotate = true;
-controls.autoRotateSpeed = -1;
-controls.saveState();
-
 // My Vars
 var planets = [];
 var time = 0;
 var cameraState = 0;
 var focusedPlanetPosition = new THREE.Vector3();
+var smoothAlpha = 0;
+const cameraStartPosition = new THREE.Vector3(0, 75, 100);
+
+// Setup scene/camera/controls
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+camera.position.copy(cameraStartPosition);
+// camera.lookAt(0, 0, 0);
+renderer.render( scene, camera );
+controls.enabled = false;
+controls.autoRotate = true;
+controls.autoRotateSpeed = -1;
+controls.maxPolarAngle = THREE.MathUtils.degToRad(50);
+controls.saveState();
+
+
 
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
@@ -71,6 +74,7 @@ function addPlanet(mesh, orbitRadius, orbitSpeed, num) {
     } else {
       console.log(`${num} was clicked and focused.`);
       unfocusAllPlanets();
+      smoothAlpha = 0;
       controls.maxDistance = 10;
       planet.userData.focused = true;
     }
@@ -162,7 +166,22 @@ function animate() {
 
     if (planet.userData.focused) {
       planet.getWorldPosition(focusedPlanetPosition);
-      controls.target = focusedPlanetPosition;
+
+      // controls.target = focusedPlanetPosition;
+      controls.target.lerp(focusedPlanetPosition, smoothAlpha);
+      if (smoothAlpha < 1) {
+        // smoothAlpha += ((time * 0.000000001) ** 3) / 6;
+        smoothAlpha += (time * 0.000000001) ** 3 / 6;
+      } else {
+        smoothAlpha = 1;
+      }
+      
+      console.log(smoothAlpha);
+      // var oldTargetPos = controls.target.clone();
+      // controls.target = focusedPlanetPosition;
+      // var dPosition = oldTargetPos.sub(controls.target);
+      // camera.position.sub(dPosition);
+
       // controls.autoRotate = false;
       // camera.position.copy(focusOffset(focusedPlanetPosition));
       // console.log(`${planet.userData.num} is focused.`);
