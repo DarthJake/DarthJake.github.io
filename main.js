@@ -4,38 +4,92 @@
 
 import * as THREE from 'three';
 import { InteractionManager } from "three.interactive";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { SolarSystemManager } from "./SolarSystemManager"
+import { CameraManager } from "./CameraManager"
 
 // Setup threejs vars
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 const renderer = new THREE.WebGLRenderer({canvas: document.querySelector( '#background' )});
 const interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
-const controls = new OrbitControls(camera, renderer.domElement);
+// const controls = new OrbitControls(camera, renderer.domElement);
+
+const solarSystem = new SolarSystemManager();
+const cameraManager = new CameraManager(camera);
 
 // My Vars
-var planets = [];
+// var planets = [];
 var time = 0;
-var cameraFocused = false;
-var focusedPlanetPosition = new THREE.Vector3();
-const cameraStartPosition = new THREE.Vector3(0, 75, 100);
-const cameraStartLook = new THREE.Vector3(0, 0, 0);
-const cameraStartMaxDistance = 125;
-const focusedDistance = 10;
-var desiredCameraPosition = cameraStartPosition;
-var desiredCameraLook = cameraStartLook;
-var desiredCameraMaxDistance = cameraStartMaxDistance;
-const acceptableError = 5;
-var interpol = 0;
+// var cameraFocused = false;
+// var focusedPlanetPosition = new THREE.Vector3();
+// const cameraStartPosition = new THREE.Vector3(0, 75, 100);
+// const cameraStartLook = new THREE.Vector3(0, 0, 0);
+// const cameraStartMaxDistance = 125;
+// const focusedDistance = 10;
+// var desiredCameraPosition = cameraStartPosition;
+// var desiredCameraLook = cameraStartLook;
+// var desiredCameraMaxDistance = cameraStartMaxDistance;
+// const acceptableError = 5;
+// var interpol = 0;
 
-const STATE = {
-  UNFOCUSED: 1,
-  TRANSITIONING: 2,
-  FOCUSED: 3
-}
+// const STATE = {
+//   UNFOCUSED: 1,
+//   TRANSITIONING: 2,
+//   FOCUSED: 3
+// }
 
 init();
 animate();
+
+function init() {
+  // // Setup scene/camera/controls
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  camera.look
+  // camera.position.copy(cameraStartPosition);
+  // // camera.lookAt(0, 0, 0);
+  // controls.enabled = false;
+  // controls.autoRotate = true;
+  // controls.autoRotateSpeed = -1;
+  // controls.maxPolarAngle = THREE.MathUtils.degToRad(50);
+  // controls.maxDistance = desiredCameraMaxDistance;
+  // // controls.saveState();
+  window.addEventListener('resize', onWindowResize, false);
+
+  // Torus
+  const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
+  const material = new THREE.MeshStandardMaterial( { color: 0xFF6347 } );
+  const torus = new THREE.Mesh( geometry, material );
+  scene.add( torus );
+
+  // Ambient Light
+  const ambientLight = new THREE.AmbientLight(0xffffff);
+  scene.add(ambientLight);
+
+  // Moon Mesh
+  const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+  const moon = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(5, 32, 32),
+    new THREE.MeshStandardMaterial( {
+      map: moonTexture
+    })
+  );
+
+  // Make stars
+  Array(650).fill().forEach(addStar);
+  // Make Planets
+  solarSystem.addPlanet(moon.clone(true), 20, 5, 1);
+  solarSystem.addPlanet(moon.clone(true), 40, 3, 2);
+  solarSystem.addPlanet(moon.clone(true), 50, 2, 3);
+  solarSystem.addPlanet(moon.clone(true), 70, 0.5, 4);
+
+  solarSystem.getPlanets().forEach(planet => {
+    scene.add(planet.planetMesh);
+    scene.add(planet.orbit);
+    interactionManager.add(planet.planetMesh);
+  });
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -47,42 +101,43 @@ function animate() {
   // torus.rotation.z += 0.01;
 
   // Animate Planets
-  planets.forEach(function(planet) {
-    planet.position.x = Math.cos(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
-    planet.position.z = Math.sin(time * planet.userData.orbitSpeed) * planet.userData.orbitRadius;
+  solarSystem.getPlanets().forEach(planet => {
+    planet.planetMesh.position.x = Math.cos(time * planet.orbitSpeed) * planet.orbitRadius;
+    planet.planetMesh.position.z = Math.sin(time * planet.orbitSpeed) * planet.orbitRadius;
 
-    if (planet.userData.focused) {
-      planet.getWorldPosition(focusedPlanetPosition);
+    // if (planet.userData.focused) {
+    //   planet.getWorldPosition(focusedPlanetPosition);
 
-      // controls.target = focusedPlanetPosition;
-      // controls.target.lerp(focusedPlanetPosition, smoothAlpha);
-      desiredCameraLook = focusedPlanetPosition;
-      // if (smoothAlpha < 1) {
-      //   // smoothAlpha += ((time * 0.000000001) ** 3) / 6;
-      //   smoothAlpha += (time * 0.000000001) ** 3 / 6;
-      // } else {
-      //   smoothAlpha = 1;
-      // }
+    //   // controls.target = focusedPlanetPosition;
+    //   // controls.target.lerp(focusedPlanetPosition, smoothAlpha);
+    //   desiredCameraLook = focusedPlanetPosition;
+    //   // if (smoothAlpha < 1) {
+    //   //   // smoothAlpha += ((time * 0.000000001) ** 3) / 6;
+    //   //   smoothAlpha += (time * 0.000000001) ** 3 / 6;
+    //   // } else {
+    //   //   smoothAlpha = 1;
+    //   // }
       
-      // console.log(smoothAlpha);
-      // var oldTargetPos = controls.target.clone();
-      // controls.target = focusedPlanetPosition;
-      // var dPosition = oldTargetPos.sub(controls.target);
-      // camera.position.sub(dPosition);
+    //   // console.log(smoothAlpha);
+    //   // var oldTargetPos = controls.target.clone();
+    //   // controls.target = focusedPlanetPosition;
+    //   // var dPosition = oldTargetPos.sub(controls.target);
+    //   // camera.position.sub(dPosition);
 
-      // controls.autoRotate = false;
-      // camera.position.copy(focusOffset(focusedPlanetPosition));
-      // console.log(`${planet.userData.num} is focused.`);
-    }
-  })
+    //   // controls.autoRotate = false;
+    //   // camera.position.copy(focusOffset(focusedPlanetPosition));
+    //   // console.log(`${planet.userData.num} is focused.`);
+    // }
+  });
 
   // Camera Animation
   // if (cameraState == 0) {
   //   camera.position.setX(cameraStartX + Math.cos(time) * cameraXAmplitude)
   // }
-  interpolateCamera();
+  
   interactionManager.update();
-  controls.update();
+  cameraManager.update(solarSystem);
+  // controls.update();
   renderer.render( scene, camera );
 }
 
@@ -133,9 +188,9 @@ function closeTo(vector1, vector2) {
   return true;
 }
 
-function interpolateNum(currentNum, desiredNum, alpha) { // Returns a num that is alpha% between the two given numbers where alpha [0, 1].
-  // console.log(`interpolate NUM! ${currentNum}, ${desiredNum}, ${alpha}`);
-  return currentNum + (desiredNum - currentNum) * alpha;
+// https://en.wikipedia.org/wiki/Linear_interpolation
+function lerp(a, b, t) {
+  return (1 - t) * a + t * b;
 }
 
 function resetInterpolation(){
@@ -219,46 +274,7 @@ function onWindowResize() {
 
 
 
-function init() {
-  // Setup scene/camera/controls
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  camera.position.copy(cameraStartPosition);
-  // camera.lookAt(0, 0, 0);
-  controls.enabled = false;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = -1;
-  controls.maxPolarAngle = THREE.MathUtils.degToRad(50);
-  controls.maxDistance = desiredCameraMaxDistance;
-  // controls.saveState();
-  window.addEventListener('resize', onWindowResize, false);
 
-  // Torus
-  const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
-  const material = new THREE.MeshStandardMaterial( { color: 0xFF6347 } );
-  const torus = new THREE.Mesh( geometry, material );
-  scene.add( torus );
-
-  // Ambient Light
-  const ambientLight = new THREE.AmbientLight(0xffffff);
-  scene.add(ambientLight);
-
-  // Moon
-  const moonTexture = new THREE.TextureLoader().load('moon.jpg');
-  const moon = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(5, 32, 32),
-    new THREE.MeshStandardMaterial( {
-      map: moonTexture
-    })
-  );
-
-  // Make stars and Planets
-  Array(650).fill().forEach(addStar);
-  addPlanet(moon.clone(true), 20, 5, 1);
-  addPlanet(moon.clone(true), 40, 3, 2);
-  addPlanet(moon.clone(true), 50, 2, 3);
-  addPlanet(moon.clone(true), 70, 0.5, 4);
-}
 
 
 
