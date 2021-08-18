@@ -1,37 +1,58 @@
 import * as THREE from 'three';
-import {
-    SolarSystemManager
-} from "./SolarSystemManager"
+
 
 class CameraManager {
     constructor(camera) {
-
-
         //
         // Public Methods
         //
         this.update = function (solarSystem) {
             if (solarSystem.isFocused() && state == STATE.UNFOCUSED) {
                 state = STATE.TRANSITIONING;
-                resetInterpolation();
-                console.log(`Transition from Focused`);
+                console.log(`Transition from unfocused`);
             } else if (!solarSystem.isFocused() && state == STATE.FOCUSED) {
                 state = STATE.TRANSITIONING;
-                resetInterpolation();
-                console.log(`Transition from unfocused`);
+                console.log(`Transition from focused`);
             }
 
             switch (state) {
                 case STATE.FOCUSED:
-                    desiredCameraLook.copy(solarSystem.getFocusedPlanetPosition());
-                    // console.log(`${solarSystem.getFocusedPlanetPosition().x}`);
+                    // Focus Point (Camera Look)
+                    desiredCameraFocusPoint.copy(solarSystem.getFocusedPlanetPosition());
+
+                    // Focus Offset
+                    focusOffset.copy(new THREE.Vector3(desiredCameraFocusPoint.x, 0, desiredCameraFocusPoint.z));
+
+                    // Camera Theta
+                    desiredSphericalCameraCoordinates.theta = -THREE.MathUtils.degToRad(solarSystem.getFocusedPlanetAngle() - planetFocusHorizontalOffset);
+
+                    // Camera Phi
+                    desiredSphericalCameraCoordinates.phi = planetFocusVerticalAngle;
+
+                    // Camera Radius
+                    desiredSphericalCameraCoordinates.radius = planetFocusedDistanceOffset;
+
                     break;
                 case STATE.UNFOCUSED:
-                    desiredCameraLook.copy(cameraStartLook);
-                    sphericalCameraPosition.theta += 0.1;
+                    // Focus Point (Camera Look)
+                    desiredCameraFocusPoint.copy(cameraStartLook);
+
+                    // Focus Offset
+                    focusOffset.copy(cameraStartLook);
+
+                    // Camera Theta
+                    desiredSphericalCameraCoordinates.theta += 0.0025;
+
+                    // Camera Phi
+                    desiredSphericalCameraCoordinates.phi = cameraStartPhi;
+
+                    // Camera Radius
+                    desiredSphericalCameraCoordinates.radius = cameraStartRadius;
+
                     break;
                 case STATE.TRANSITIONING:
-                    interpol = 0;
+                    resetInterpolation();
+                    interpolatingCameraFocusPoint.copy(desiredCameraFocusPoint);
                     if (solarSystem.isFocused()) {
                         state = STATE.FOCUSED;
                     } else if (!solarSystem.isFocused()) {
@@ -44,8 +65,6 @@ class CameraManager {
             }
 
             updateCameraPosition();
-
-            // planet.planetMesh.position.x = Math.cos(time * planet.orbitSpeed) * planet.orbitRadius;
         }
 
         //
@@ -56,85 +75,61 @@ class CameraManager {
             TRANSITIONING: 1,
             FOCUSED: 2
         }
-        let state = STATE.UNFOCUSED;
+        var state = STATE.UNFOCUSED;
 
-        const cameraStartPosition = new THREE.Vector3(0, 75, 100);
+        const cameraStartTheta = 0;
+        const cameraStartPhi = THREE.MathUtils.degToRad(65);
+        const cameraStartRadius = 125;
         const cameraStartLook = new THREE.Vector3(0, 0, 0);
-        const cameraStartMaxDistance = 125;
-        const focusedDistance = 10;
-        const acceptableError = 5;
+        const planetFocusHorizontalOffset = 150;
+        const planetFocusVerticalAngle = THREE.MathUtils.degToRad(80);
+        const planetFocusedDistanceOffset = 8;
+        const interpolationIncrease = 0.005
 
-        var desiredCameraPosition = new THREE.Vector3().copy(cameraStartPosition);
-        var desiredCameraLook = new THREE.Vector3().copy(cameraStartLook)
-        var desiredCameraMaxDistance = cameraStartMaxDistance;
-        var sphericalCameraPosition = new THREE.Spherical();
-        var interpolatingLookAt = new THREE.Vector3();
-        var interpol = 0;
+        var interpol = 1;
+        var desiredSphericalCameraCoordinates = new THREE.Spherical();
+        var desiredCameraFocusPoint = new THREE.Vector3().copy(cameraStartLook);
+        var interpolatingCameraFocusPoint = new THREE.Vector3().copy(cameraStartLook);
+        var focusOffset = new THREE.Vector3().copy(cameraStartLook);
 
-        sphericalCameraPosition.setFromVector3(cameraStartPosition);
-        camera.position.setFromSpherical(sphericalCameraPosition);
-        camera.lookAt(0, 0, 0);
+        // Set initial position and look at
+        desiredSphericalCameraCoordinates.theta = cameraStartTheta;
+        desiredSphericalCameraCoordinates.phi = cameraStartPhi;
+        desiredSphericalCameraCoordinates.radius = cameraStartRadius;
+        camera.position.setFromSpherical(desiredSphericalCameraCoordinates);
+        camera.lookAt(cameraStartLook);
 
         function updateCameraPosition() {
-            // Position
-            // if (!closeTo(camera.position, desiredCameraPosition)) {
-            //     console.log(`${camera.position.toArray()} - ${desiredCameraPosition.toArray()}`);
-            //     if (interpol < 1) {
-            //         camera.position.lerp(desiredCameraPosition, interpol);
-            //         interpol += 0.01;
-
-            //     } else {
-            //         camera.position.copy(desiredCameraPosition);
-            //     }
-            // }
-
-            // Look
-            // console.log(`${interpolatingLookAt.toArray()} - ${desiredCameraLook.toArray()}`);
+            // Interpolate values towards desired values
+            // console.log(interpol);
             if (interpol < 1) {
-                interpolatingLookAt.lerp(desiredCameraLook, interpol);
-                camera.lookAt(interpolatingLookAt);
-                interpol += 0.01;
-                
+                console.log("hmm");
+                // Camera Position
+                camera.position.lerp(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset), interpol);
+
+                // Camera Look
+                interpolatingCameraFocusPoint.lerp(desiredCameraFocusPoint, interpol);
+                camera.lookAt(interpolatingCameraFocusPoint);
+
+                // Increase interpolation percent
+                interpol += 0.03;
             } else {
-                camera.lookAt(desiredCameraLook);
+                // Camera Position
+                camera.position.copy(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset));
+
+                // Camera Look
+                camera.lookAt(desiredCameraFocusPoint);
+                // interpolatingCameraFocusPoint.copy(desiredCameraFocusPoint); // could move this to be run only once
             }
-
-            // // Max Distance
-            // // if (cameraFocused == true) {
-            // if (cameraFocused == true) {
-            //     if (interpol < 1) {
-            //         controls.maxDistance = interpolateNum(controls.maxDistance, desiredCameraMaxDistance, interpol);
-            //         interpol += 0.01;
-            //     } else {
-            //         controls.maxDistance = desiredCameraMaxDistance;
-            //     }
-            // } else {
-            //     controls.maxDistance = cameraStartMaxDistance;
-            // }
-
-            // }
         }
 
         function resetInterpolation(){
             interpol = 0;
         }
 
-        // function mutateToFocusedView(planetPosition) {
-        //     if(planetPosition.x >)
-        // }
-
-        function closeTo(vector1, vector2) {
-            var difference = new THREE.Vector3().subVectors(vector1, vector2);
-            if (difference.x > acceptableError) {
-                return false;
-            }
-            if (difference.y > acceptableError) {
-                return false;
-            }
-            if (difference.z > acceptableError) {
-                return false;
-            }
-            return true;
+        // https://en.wikipedia.org/wiki/Linear_interpolation
+        function lerp(a, b, t) {
+            return (1 - t) * a + t * b;
         }
     }
 }

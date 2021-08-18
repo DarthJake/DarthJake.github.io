@@ -188,10 +188,7 @@ function closeTo(vector1, vector2) {
   return true;
 }
 
-// https://en.wikipedia.org/wiki/Linear_interpolation
-function lerp(a, b, t) {
-  return (1 - t) * a + t * b;
-}
+
 
 function resetInterpolation(){
   interpol = 0;
