@@ -103,7 +103,6 @@ class CameraManager {
             // Interpolate values towards desired values
             // console.log(interpol);
             if (interpol < 1) {
-                console.log("hmm");
                 // Camera Position
                 camera.position.lerp(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset), interpol);
 
@@ -112,7 +111,7 @@ class CameraManager {
                 camera.lookAt(interpolatingCameraFocusPoint);
 
                 // Increase interpolation percent
-                interpol += 0.03;
+                interpol += 0.015;
             } else {
                 // Camera Position
                 camera.position.copy(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset));
