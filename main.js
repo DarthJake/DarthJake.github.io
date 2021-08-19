@@ -2,8 +2,8 @@
 // import { InteractionManager } from "three.interactive";
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
 import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
-import { SolarSystemManager } from "./SolarSystemManager"
-import { CameraManager } from "./CameraManager"
+import { SolarSystemManager } from "./SolarSystemManager.js"
+import { CameraManager } from "./CameraManager.js"
 
 // Setup threejs vars
 const scene = new THREE.Scene();
