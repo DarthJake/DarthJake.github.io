@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-
+// import * as THREE from 'three';
+import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
 
 class CameraManager {
     constructor(camera) {
@@ -81,10 +81,11 @@ class CameraManager {
         const cameraStartPhi = THREE.MathUtils.degToRad(65);
         const cameraStartRadius = 125;
         const cameraStartLook = new THREE.Vector3(0, 0, 0);
+
         const planetFocusHorizontalOffset = 150;
         const planetFocusVerticalAngle = THREE.MathUtils.degToRad(80);
         const planetFocusedDistanceOffset = 8;
-        const interpolationIncrease = 0.005
+        const interpolationIncrease = 0.01;
 
         var interpol = 1;
         var desiredSphericalCameraCoordinates = new THREE.Spherical();
@@ -101,7 +102,6 @@ class CameraManager {
 
         function updateCameraPosition() {
             // Interpolate values towards desired values
-            // console.log(interpol);
             if (interpol < 1) {
                 // Camera Position
                 camera.position.lerp(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset), interpol);
@@ -111,7 +111,7 @@ class CameraManager {
                 camera.lookAt(interpolatingCameraFocusPoint);
 
                 // Increase interpolation percent
-                interpol += 0.015;
+                interpol += interpolationIncrease;
             } else {
                 // Camera Position
                 camera.position.copy(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset));
@@ -122,7 +122,7 @@ class CameraManager {
             }
         }
 
-        function resetInterpolation(){
+        function resetInterpolation() {
             interpol = 0;
         }
 

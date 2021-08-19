@@ -37,7 +37,6 @@ class SolarSystemManager {
             var angle = Math.atan2(focusedPlanetPosition.z, focusedPlanetPosition.x);
             angle = angle * (180 / Math.PI); // Convert radians to degrees
             angle = (angle + 360) % 360; // Convert [-180,180] to [0,360]
-            // console.log(angle);
             return angle;
         }
 
