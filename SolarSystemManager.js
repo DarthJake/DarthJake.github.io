@@ -12,8 +12,9 @@ class SolarSystemManager {
         //
 		// Public Methods
 		//
-        this.addPlanet = function (planetMesh, orbitRadius, orbitSpeed, id) {
-            planets.push(new Planet(planetMesh, orbitRadius, orbitSpeed, id, planetClicked));
+        this.addPlanet = function (planetMesh, orbitRadius, orbitSpeed, verticalOffset, id) {
+            console.log("Attempting to create and push planet id '" + id + "' to planet array.");
+            planets.push(new Planet(planetMesh, orbitRadius, orbitSpeed, verticalOffset, id, planetClicked));
         }
 
         this.getPlanets = function () {
@@ -61,18 +62,25 @@ class SolarSystemManager {
 }
 
 class Planet {
-    constructor(planetMesh, orbitRadius, orbitSpeed, id, planetClicked) {
+    constructor(planetMesh, orbitRadius, orbitSpeed, verticalOffset, id, planetClicked) {
+        console.log("Constructor Creating Planet:\n\t- Radius: " + orbitRadius + "\n\t- Speed: " + orbitSpeed + "\n\t- ID: " + id)
         // Data
         this.planetMesh = planetMesh;
         this.orbitRadius = orbitRadius;
         this.orbitSpeed = orbitSpeed;
+        this.verticalOffset = verticalOffset;
         this.id = id;
         var orbit;
 
+        // Vertical Offset
+        this.planetMesh.position.y = verticalOffset;
+
+        // Event Listener
         planetMesh.addEventListener("click", (event) => {
             event.stopPropagation();
             planetClicked(this);
         });
+        console.log(`Added event Listener to planet id '${id}'.`);
 
         // Make the Orbit
         var orbitPath = new THREE.Shape();

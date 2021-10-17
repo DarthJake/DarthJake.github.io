@@ -79,11 +79,11 @@ class CameraManager {
 
         const cameraStartTheta = 0;
         const cameraStartPhi = THREE.MathUtils.degToRad(65);
-        const cameraStartRadius = 125;
+        const cameraStartRadius = 63;
         const cameraStartLook = new THREE.Vector3(0, 0, 0);
 
         const planetFocusHorizontalOffset = 150;
-        const planetFocusVerticalAngle = THREE.MathUtils.degToRad(80);
+        const planetFocusVerticalAngle = THREE.MathUtils.degToRad(75);
         const planetFocusedDistanceOffset = 8;
         const interpolationIncrease = 0.01;
 
