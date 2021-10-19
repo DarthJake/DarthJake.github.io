@@ -39,8 +39,10 @@ function init() {
   // Ambient Light
   const ambientLight = new THREE.AmbientLight(0xffffff);
 
+  // ----- Planets -----
+  const planetPromises = [];
   // Moon Planet
-  const moonPlanetPromise = new Promise((resolve, reject) => {
+  planetPromises.push(new Promise((resolve, reject) => {
     const moonTexture = new THREE.TextureLoader().load('moon.jpg');
     const moon = new THREE.Mesh(
       new THREE.SphereBufferGeometry(5, 32, 32),
@@ -48,29 +50,44 @@ function init() {
         map: moonTexture
       })
     );
-    solarSystem.addPlanet(moon.clone(true), 20, 5, 0, 1);
-    resolve("Completed Promise!");
-  });
+    solarSystem.addPlanet({
+      planetMesh: moon.clone(true),
+      orbitRadius: 20,
+      orbitSpeed: 3,
+      id: 1,
+    });
+    resolve();
+  }));
 
   // About Planet
-  const aboutPlanetPromise = new Promise((resolve, reject) => {
+  planetPromises.push(new Promise((resolve, reject) => {
       loader.load('models/questionBox.gltf', function (gltf) { // Called after success
-        gltf.scene.scale.set(0.008, 0.008, 0.008);
+        gltf.scene.scale.set(0.0075, 0.0075, 0.0075);
         gltf.scene.rotateX(THREE.MathUtils.degToRad(20));
         gltf.scene.rotateY(THREE.MathUtils.degToRad(20));
 
-        solarSystem.addPlanet(gltf.scene, 40, 3, -4, 2);
-        resolve("Completed Promise!");
+        solarSystem.addPlanet({
+          planetMesh: gltf.scene,
+          orbitRadius: 30,
+          orbitSpeed: 1,
+          positionalVerticalOffset: -3,
+          cameraVerticalLookAtOffset: 2,
+          focusedDistance: 8.5,
+          focusedHorizontalOffset: 150,
+          focusedVerticalAngle: THREE.MathUtils.degToRad(65),
+          id: 2,
+        });
+        resolve();
       }, function (xhr) { // Called during execution
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
       }, function (error) { // called when loading has errors
         reject("Failed loading About Planet: " + error);
         return;
       });
-  });
+  }));
 
   // Proceed when all elements are loaded
-  Promise.all([moonPlanetPromise, aboutPlanetPromise]).then(() => {
+  Promise.all(planetPromises).then(() => {
     console.log("Promises resolved. Adding elements to the scene:");
     scene.add(torus);
     scene.add(ambientLight);
