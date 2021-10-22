@@ -4,7 +4,9 @@ import {InteractionManager} from "three.interactive";
 // import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {SolarSystemManager} from "./SolarSystemManager.js"
+import {TextManager} from "./TextManager.js"
 import {CameraManager} from "./CameraManager.js"
+import { CompressedTextureLoader } from 'three';
 
 // Setup threejs vars
 const scene = new THREE.Scene();
@@ -13,9 +15,11 @@ const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#backg
 const interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 const loader = new GLTFLoader();
 
+
 // My Object Managers
 const solarSystem = new SolarSystemManager();
 const cameraManager = new CameraManager(camera);
+const textManager = new TextManager();
 
 // Timer for animation
 var time = 0;
@@ -119,6 +123,7 @@ function animate() {
 
   interactionManager.update();
   cameraManager.update(solarSystem);
+  textManager.update(solarSystem);
   renderer.render(scene, camera);
 }
 
@@ -136,7 +141,11 @@ function addStar() {
 }
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  renderer.setSize(width, height);
 }

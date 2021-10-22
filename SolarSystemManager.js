@@ -1,5 +1,7 @@
 // import * as THREE from 'three';
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
+import { Loader } from 'three';
+// import { FontLoader } from './jsm/loaders/FontLoader.js';
 
 class SolarSystemManager {
     constructor() {
@@ -8,6 +10,9 @@ class SolarSystemManager {
         var focusedPlanetPosition = new THREE.Vector3();
         const scope = this;
         var focusedFlag = false;
+        // const fontLoader = new fontLoader();
+        var font;
+        // fontLoader.load("")
 
         //
 		// Public Methods
@@ -62,6 +67,10 @@ class SolarSystemManager {
             return focusedPlanet.cameraVerticalLookAtOffset;
         }
 
+        this.getFocusedPlanetID = function () {
+            return focusedPlanet.id;
+        }
+
         //
         // Internals
         //
@@ -95,12 +104,23 @@ class Planet {
         // Vertical Offset
         this.planetMesh.position.y = positionalVerticalOffset;
 
-        // Event Listener
+        // Event Listeners
         planetMesh.addEventListener("click", (event) => {
             event.stopPropagation();
             planetClicked(this);
         });
-        console.log(`Added event Listener to planet id '${id}'.`);
+        
+        planetMesh.addEventListener("mouseover", (event) => {
+            event.stopPropagation();
+            document.body.style.cursor = 'pointer'
+            // this.planetMesh.scale.multiplyScalar(1.5);
+        });
+
+        planetMesh.addEventListener("mouseout", (event) => {
+            event.stopPropagation();
+            document.body.style.cursor = 'default'
+            // this.planetMesh.scale.multiplyScalar(1/1.5);
+        });
 
         // Make the Orbit
         var orbitPath = new THREE.Shape();
