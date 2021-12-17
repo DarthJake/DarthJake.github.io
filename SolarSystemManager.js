@@ -1,7 +1,5 @@
 // import * as THREE from 'three';
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
-import { Loader } from 'three';
-// import { FontLoader } from './jsm/loaders/FontLoader.js';
 
 class SolarSystemManager {
     constructor() {
@@ -10,9 +8,7 @@ class SolarSystemManager {
         var focusedPlanetPosition = new THREE.Vector3();
         const scope = this;
         var focusedFlag = false;
-        // const fontLoader = new fontLoader();
         var font;
-        // fontLoader.load("")
 
         //
 		// Public Methods

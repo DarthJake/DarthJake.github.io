@@ -4,7 +4,7 @@
 // import { EffectComposer, RenderPass, SelectiveBloomEffect, EffectPass, BlendFunction, KernelSize } from "postprocessing";
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
-import { InteractionManager } from "https://cdn.skypack.dev/three.interactive";
+import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/loaders/GLTFLoader.js';
 import { EffectComposer, RenderPass, SelectiveBloomEffect, EffectPass, BlendFunction, KernelSize } from 'https://cdn.skypack.dev/postprocessing@6.23.3';
 
