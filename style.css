@@ -10,25 +10,16 @@ html, body {
   left: 0;
 }
 
-#aboutWrapper {
+.contentWrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-auto-rows: minmax(5vh, auto);
   opacity:0;
   pointer-events: none;
+  position: absolute;
 }
 
-#aboutWrapper > div{
-  /* border: 2px dotted seagreen; */
-}
-
-
-
-/* #aboutWrapper > div:nth-child(odd){
-  background: #ddd;
-} */
-
-#aboutTitle {
+.contentTitle {
   font-size: 8vh;
   color: white;
   z-index: 100;
@@ -40,7 +31,7 @@ html, body {
   text-decoration: underline;
 }
 
-#aboutText {
+.contentText {
   color: white;
   z-index: 100;
   font-size: 3.5vh;
@@ -67,6 +58,22 @@ html, body {
   animation-duration: 4s;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out; */
+}
+
+#backArrow {
+  font-size: 10vh;
+  color: white;
+  position: absolute;
+  top: 0px;
+  left: 10px;
+  width: 100%;
+  text-align: left;
+  z-index: 100;
+  display: block;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* #hi {

@@ -14,38 +14,69 @@ class TextManager {
 
             switch (state) {
                 case STATE.FOCUSED: // Stuff that needs to be updated every frame of focused
-                    
-
                     break;
                 case STATE.UNFOCUSED: // Stuff that needs to be updated every frame of unfocused
-                    
-
                     break;
                 case STATE.TRANSITIONING: // Stuff that only needs to be updated once when transitioning 
                     if (solarSystem.isFocused()) {
                         // Main Title
-                        title.classList.remove("fadeIn")
-                        void title.offsetWidth; // This is sadly necessary to trigger a reflow...
-                        title.classList.add("fadeOut")
+                        fadeInToFadeOut(title);
 
-                        // About Section
-                        if (solarSystem.getFocusedPlanetID() == 1) {
-                            about.classList.remove("fadeOut")
-                            void title.offsetWidth;
-                            about.classList.add("fadeIn")
-                        }
+                        // Back Arrow
+                        fadeOutToFadeIn(backArrow);
+                        backArrow.style.pointerEvents = "auto"
+
+                        // Sections
+                        var key = solarSystem.getFocusedPlanetID();
+                        switch (key) {
+                            case 1: // About Me Section
+                                fadeOutToFadeIn(about);
+                                break;
+
+                            case 2: // Skills Section
+                                fadeOutToFadeIn(skills);
+                                break;
+
+                            case 3: // Projects Section
+                                fadeOutToFadeIn(projects);
+                                break;
+
+                            case 4: // Contact Me Section
+                                fadeOutToFadeIn(contactMe);
+                                break;
                         
+                            default:
+                                break;
+                        }
+
                         state = STATE.FOCUSED;
                     } else if (!solarSystem.isFocused()) {
                         // Main Title
-                        title.classList.remove("fadeOut")
-                        void title.offsetWidth;
-                        title.classList.add("fadeIn")
+                        fadeOutToFadeIn(title);
+
+                        // Back Arrow
+                        fadeInToFadeOut(backArrow);
+                        backArrow.style.pointerEvents = "none"
 
                         // About Section
-                        about.classList.remove("fadeIn")
-                        void title.offsetWidth;
-                        about.classList.add("fadeOut")
+                        if (about.classList.contains("fadeIn")) {
+                            fadeInToFadeOut(about);
+                        }
+
+                        // Skills Section
+                        if (skills.classList.contains("fadeIn")) {
+                            fadeInToFadeOut(skills);
+                        }
+
+                        // Projects Section
+                        if (projects.classList.contains("fadeIn")) {
+                            fadeInToFadeOut(projects);
+                        }
+
+                        // Contact Me Section
+                        if (contactMe.classList.contains("fadeIn")) {
+                            fadeInToFadeOut(contactMe);
+                        }
                         
                         state = STATE.UNFOCUSED;
                     }
@@ -54,8 +85,6 @@ class TextManager {
                     console.log("Somehow we are here...");
                     break;
             }
-
-            updateText();
         }
 
         //
@@ -69,10 +98,22 @@ class TextManager {
         var state = STATE.UNFOCUSED;
 
         const title = document.getElementById("title");
+        const backArrow = document.getElementById("backArrow");
         const about = document.getElementById("aboutWrapper");
+        const skills = document.getElementById("skillsWrapper");
+        const projects = document.getElementById("projectsWrapper");
+        const contactMe = document.getElementById("contactMeWrapper");
 
-        function updateText() {
-            
+        function fadeOutToFadeIn(e) {
+            e.classList.remove("fadeOut")
+            void e.offsetWidth; // This is sadly necessary to trigger a reflow...
+            e.classList.add("fadeIn")
+        }
+
+        function fadeInToFadeOut(e) {
+            e.classList.remove("fadeIn")
+            void e.offsetWidth; // This is sadly necessary to trigger a reflow...
+            e.classList.add("fadeOut")
         }
     }
 }
