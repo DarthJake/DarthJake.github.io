@@ -16,12 +16,12 @@ class CameraManager {
             }
 
             switch (state) {
-                case STATE.FOCUSED:
+                case STATE.FOCUSED: // Stuff that needs to be updated every frame of focused
                     // Focus Point (Camera Look)
-                    desiredCameraFocusPoint.copy(solarSystem.getFocusedPlanetPosition());
+                    desiredCameraFocusPoint.copy(solarSystem.getFocusedPlanetPosition().add(new THREE.Vector3(0, cameraVerticalLookAtOffset, 0)));
 
-                    // Focus Offset
-                    focusOffset.copy(new THREE.Vector3(desiredCameraFocusPoint.x, 0, desiredCameraFocusPoint.z));
+                    // Camera Offset
+                    cameraOffset.copy(new THREE.Vector3(desiredCameraFocusPoint.x, 0, desiredCameraFocusPoint.z));
 
                     // Camera Theta
                     desiredSphericalCameraCoordinates.theta = -THREE.MathUtils.degToRad(solarSystem.getFocusedPlanetAngle() - planetFocusHorizontalOffset);
@@ -33,15 +33,15 @@ class CameraManager {
                     desiredSphericalCameraCoordinates.radius = planetFocusedDistanceOffset;
 
                     break;
-                case STATE.UNFOCUSED:
+                case STATE.UNFOCUSED: // Stuff that needs to be updated every frame of unfocused
                     // Focus Point (Camera Look)
                     desiredCameraFocusPoint.copy(cameraStartLook);
 
                     // Focus Offset
-                    focusOffset.copy(cameraStartLook);
+                    cameraOffset.copy(cameraStartLook);
 
                     // Camera Theta
-                    desiredSphericalCameraCoordinates.theta += 0.0025;
+                    desiredSphericalCameraCoordinates.theta += cameraRotationSpeed;
 
                     // Camera Phi
                     desiredSphericalCameraCoordinates.phi = cameraStartPhi;
@@ -50,10 +50,14 @@ class CameraManager {
                     desiredSphericalCameraCoordinates.radius = cameraStartRadius;
 
                     break;
-                case STATE.TRANSITIONING:
+                case STATE.TRANSITIONING: // Stuff that only needs to be updated once when transitioning 
                     resetInterpolation();
-                    interpolatingCameraFocusPoint.copy(desiredCameraFocusPoint);
+                    
                     if (solarSystem.isFocused()) {
+                        planetFocusHorizontalOffset = solarSystem.getFocusedPlanetFocusedHorizontalOffset();
+                        planetFocusVerticalAngle = solarSystem.getFocusedPlanetFocusedVerticalAngle();
+                        planetFocusedDistanceOffset = solarSystem.getFocusedPlanetFocusedDistance();
+                        cameraVerticalLookAtOffset = solarSystem.getFocusedPlanetCameraVerticalLookAtOffset();
                         state = STATE.FOCUSED;
                     } else if (!solarSystem.isFocused()) {
                         state = STATE.UNFOCUSED;
@@ -77,21 +81,24 @@ class CameraManager {
         }
         var state = STATE.UNFOCUSED;
 
+        // Settings
+        const interpolationIncrease = 0.01;
+        const cameraRotationSpeed = 0.0015;
         const cameraStartTheta = 0;
         const cameraStartPhi = THREE.MathUtils.degToRad(65);
         const cameraStartRadius = 63;
         const cameraStartLook = new THREE.Vector3(0, 0, 0);
 
-        const planetFocusHorizontalOffset = 150;
-        const planetFocusVerticalAngle = THREE.MathUtils.degToRad(75);
-        const planetFocusedDistanceOffset = 8;
-        const interpolationIncrease = 0.01;
+        var planetFocusHorizontalOffset = 150;
+        var planetFocusVerticalAngle = THREE.MathUtils.degToRad(75);
+        var planetFocusedDistanceOffset = 8;
+        var cameraVerticalLookAtOffset = 0;
 
         var interpol = 1;
         var desiredSphericalCameraCoordinates = new THREE.Spherical();
         var desiredCameraFocusPoint = new THREE.Vector3().copy(cameraStartLook);
         var interpolatingCameraFocusPoint = new THREE.Vector3().copy(cameraStartLook);
-        var focusOffset = new THREE.Vector3().copy(cameraStartLook);
+        var cameraOffset = new THREE.Vector3().copy(cameraStartLook);
 
         // Set initial position and look at
         desiredSphericalCameraCoordinates.theta = cameraStartTheta;
@@ -104,7 +111,7 @@ class CameraManager {
             // Interpolate values towards desired values
             if (interpol < 1) {
                 // Camera Position
-                camera.position.lerp(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset), interpol);
+                camera.position.lerp(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(cameraOffset), interpol);
 
                 // Camera Look
                 interpolatingCameraFocusPoint.lerp(desiredCameraFocusPoint, interpol);
@@ -114,11 +121,11 @@ class CameraManager {
                 interpol += interpolationIncrease;
             } else {
                 // Camera Position
-                camera.position.copy(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(focusOffset));
+                camera.position.copy(new THREE.Vector3().setFromSpherical(desiredSphericalCameraCoordinates).add(cameraOffset));
 
                 // Camera Look
                 camera.lookAt(desiredCameraFocusPoint);
-                // interpolatingCameraFocusPoint.copy(desiredCameraFocusPoint); // could move this to be run only once
+                interpolatingCameraFocusPoint.copy(desiredCameraFocusPoint); // Need to keep them synced
             }
         }
 

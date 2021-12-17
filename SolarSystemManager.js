@@ -1,5 +1,7 @@
 // import * as THREE from 'three';
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
+import { Loader } from 'three';
+// import { FontLoader } from './jsm/loaders/FontLoader.js';
 
 class SolarSystemManager {
     constructor() {
@@ -8,13 +10,16 @@ class SolarSystemManager {
         var focusedPlanetPosition = new THREE.Vector3();
         const scope = this;
         var focusedFlag = false;
+        // const fontLoader = new fontLoader();
+        var font;
+        // fontLoader.load("")
 
         //
 		// Public Methods
 		//
-        this.addPlanet = function (planetMesh, orbitRadius, orbitSpeed, verticalOffset, id) {
+        this.addPlanet = function ({planetMesh, orbitRadius, orbitSpeed, positionalVerticalOffset = 0, focusedVerticalAngle = THREE.MathUtils.degToRad(75), focusedHorizontalOffset = 150, focusedDistance = 8, cameraVerticalLookAtOffset = 0, childMesh = null, id}) {
             console.log("Attempting to create and push planet id '" + id + "' to planet array.");
-            planets.push(new Planet(planetMesh, orbitRadius, orbitSpeed, verticalOffset, id, planetClicked));
+            planets.push(new Planet(planetMesh, orbitRadius, orbitSpeed, positionalVerticalOffset, focusedVerticalAngle, focusedHorizontalOffset, focusedDistance, cameraVerticalLookAtOffset, childMesh, id, planetClicked));
         }
 
         this.getPlanets = function () {
@@ -46,14 +51,47 @@ class SolarSystemManager {
             return focusedPlanet.orbitRadius;
         }
 
+        this.getFocusedPlanetFocusedVerticalAngle = function () {
+            return focusedPlanet.focusedVerticalAngle;
+        }
+
+        this.getFocusedPlanetFocusedHorizontalOffset = function () {
+            return focusedPlanet.focusedHorizontalOffset;
+        }
+
+        this.getFocusedPlanetFocusedDistance = function () {
+            return focusedPlanet.focusedDistance;
+        }
+        
+        this.getFocusedPlanetCameraVerticalLookAtOffset = function () {
+            return focusedPlanet.cameraVerticalLookAtOffset;
+        }
+
+        this.getFocusedPlanetID = function () {
+            return focusedPlanet.id;
+        }
+
+        this.getPlanetByID = function (i) {
+            planets.forEach(planet => {
+                if (planet.id == i) {
+                    return planet;
+                }
+            });
+            return planets[i]; // Fallback to index
+        }
+
+        this.unfocus = function () {
+            focusedPlanet = undefined;
+        }
+
         //
         // Internals
         //
         function planetClicked(planet) {
-            if (planet != focusedPlanet) {
+            if (focusedPlanet == undefined) {
                 focusedPlanet = planet;
                 console.log(`${planet.id} was clicked and focused.`);
-            } else {
+            } else if (planet == focusedPlanet) {
                 focusedPlanet = undefined;
                 console.log(`${planet.id} was clicked and unfocused.`);
             }
@@ -62,25 +100,44 @@ class SolarSystemManager {
 }
 
 class Planet {
-    constructor(planetMesh, orbitRadius, orbitSpeed, verticalOffset, id, planetClicked) {
+    constructor(planetMesh, orbitRadius, orbitSpeed, positionalVerticalOffset, focusedVerticalAngle, focusedHorizontalOffset, focusedDistance, cameraVerticalLookAtOffset, childMesh, id, planetClicked) {
         console.log("Constructor Creating Planet:\n\t- Radius: " + orbitRadius + "\n\t- Speed: " + orbitSpeed + "\n\t- ID: " + id)
         // Data
         this.planetMesh = planetMesh;
         this.orbitRadius = orbitRadius;
         this.orbitSpeed = orbitSpeed;
-        this.verticalOffset = verticalOffset;
+        this.positionalVerticalOffset = positionalVerticalOffset;
+        this.focusedVerticalAngle = focusedVerticalAngle;
+        this.focusedHorizontalOffset = focusedHorizontalOffset;
+        this.focusedDistance = focusedDistance;
+        this.cameraVerticalLookAtOffset = cameraVerticalLookAtOffset;
+        this.childMesh = childMesh;
         this.id = id;
+        this.mouseover = false;
         var orbit;
 
         // Vertical Offset
-        this.planetMesh.position.y = verticalOffset;
+        this.planetMesh.position.y = positionalVerticalOffset;
 
-        // Event Listener
-        planetMesh.addEventListener("click", (event) => {
+        // Event Listeners
+        this.planetMesh.addEventListener("click", (event) => {
             event.stopPropagation();
             planetClicked(this);
         });
-        console.log(`Added event Listener to planet id '${id}'.`);
+        
+        this.planetMesh.addEventListener("mouseover", (event) => {
+            event.stopPropagation();
+            document.body.style.cursor = 'pointer'
+            this.mouseover = true;
+            // this.planetMesh.scale.multiplyScalar(1.5);
+        });
+
+        this.planetMesh.addEventListener("mouseout", (event) => {
+            event.stopPropagation();
+            document.body.style.cursor = 'default'
+            this.mouseover = false;
+            // this.planetMesh.scale.multiplyScalar(1/1.5);
+        });
 
         // Make the Orbit
         var orbitPath = new THREE.Shape();
@@ -91,7 +148,15 @@ class Planet {
         this.orbit = new THREE.Line(orbitGeometry, new THREE.LineBasicMaterial({
             color: "white"
         }));
+
+        ////// Functions ///////
+        this.addChildMesh = function () {
+            this.planetMesh.add(this.childMesh);
+            console.log("ADDED!!")
+        }
     }
+
+    
 }
 
 export { SolarSystemManager };
