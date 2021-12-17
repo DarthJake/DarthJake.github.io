@@ -155,7 +155,7 @@ function init() {
         positionalVerticalOffset: -7,
         cameraVerticalLookAtOffset: 8,
         focusedDistance: 10,
-        focusedHorizontalOffset: 150,
+        focusedHorizontalOffset: 140,
         focusedVerticalAngle: THREE.MathUtils.degToRad(50),
         id: 2,
       });
@@ -211,11 +211,10 @@ function init() {
         planetMesh: gltf.scene,
         orbitRadius: 45,
         orbitSpeed: 3.5,
-        // positionalVerticalOffset: -3,
         // cameraVerticalLookAtOffset: 2,
-        // focusedDistance: 8.5,
-        // focusedHorizontalOffset: 150,
-        // focusedVerticalAngle: THREE.MathUtils.degToRad(65),
+        focusedDistance: 15,
+        focusedHorizontalOffset: 120,
+        focusedVerticalAngle: THREE.MathUtils.degToRad(65),
         id: 4,
       });
 
