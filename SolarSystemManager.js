@@ -71,11 +71,6 @@ class SolarSystemManager {
             return focusedPlanet.id;
         }
 
-        // This is dumb. Don't use. Temporary.
-        this.getPlanetByIndex = function (i) {
-            return planets[i];
-        }
-
         this.getPlanetByID = function (i) {
             planets.forEach(planet => {
                 if (planet.id == i) {

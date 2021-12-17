@@ -83,8 +83,7 @@ class CameraManager {
 
         // Settings
         const interpolationIncrease = 0.01;
-        // const cameraRotationSpeed = 0.0015;
-        const cameraRotationSpeed = 0.0;
+        const cameraRotationSpeed = 0.0015;
         const cameraStartTheta = 0;
         const cameraStartPhi = THREE.MathUtils.degToRad(65);
         const cameraStartRadius = 63;
