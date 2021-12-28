@@ -1,12 +1,12 @@
-import * as THREE from 'three';
-import { InteractionManager } from "three.interactive";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import Stats from 'three/examples/jsm/libs/stats.module'
+// import * as THREE from 'three';
+// import { InteractionManager } from "three.interactive";
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// import Stats from 'three/examples/jsm/libs/stats.module'
 
-// import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
-// import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive';
-// import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/loaders/GLTFLoader.js';
-// import Stats from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/libs/stats.module'
+import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
+import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive';
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/loaders/GLTFLoader.js';
+import Stats from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/libs/stats.module'
 
 import { SolarSystemManager } from "./SolarSystemManager.js"
 import { TextManager } from "./TextManager.js"
@@ -47,7 +47,7 @@ var astroid;
 
 // Flag
 var handFlag = false;
-var doStats = true;
+var doStats = false;
 
 // START!
 init();
