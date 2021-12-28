@@ -1,29 +1,16 @@
 import * as THREE from 'three';
 import { InteractionManager } from "three.interactive";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer, RenderPass, SelectiveBloomEffect, EffectPass, BlendFunction, KernelSize } from "postprocessing";
 import Stats from 'three/examples/jsm/libs/stats.module'
-
 
 // import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
 // import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive';
 // import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/loaders/GLTFLoader.js';
-// import { EffectComposer, RenderPass, SelectiveBloomEffect, EffectPass, BlendFunction, KernelSize } from 'https://cdn.skypack.dev/postprocessing@6.23.3';
-// import { Stats } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/libs/stats.module'
+// import Stats from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/libs/stats.module'
 
 import { SolarSystemManager } from "./SolarSystemManager.js"
 import { TextManager } from "./TextManager.js"
 import { CameraManager } from "./CameraManager.js"
-
-// Constants
-const bloomOptions = {
-  blendFunction: BlendFunction.SKIP,
-  kernelSize: KernelSize.LARGE,
-  luminanceThreshold: 0.1,
-  luminanceSmoothing: 0.9,
-  intensity: 2.2,
-  // height: 480
-};
 
 // Setup threejs vars
 const scene = new THREE.Scene();
@@ -33,11 +20,7 @@ const renderer = new THREE.WebGLRenderer({
   powerPreference: "high-performance",
 	antialias: false,
 	stencil: false,
-  depth: false
 });
-// const renderPass = new RenderPass(scene, camera);
-const bloomEffect = new SelectiveBloomEffect(scene, camera, bloomOptions);
-const composer = new EffectComposer(renderer);
 const interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 const loader = new GLTFLoader();
 
@@ -56,7 +39,6 @@ var clock;
 var stats;
 
 // Non Planet Objects
-// var torus;
 var hand;
 var handTarget
 
@@ -69,22 +51,12 @@ var doStats = true;
 
 // START!
 init();
-animate();
 
 function init() {
   // Setup scene/camera/controls
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   window.addEventListener('resize', onWindowResize, false);
-
-  // Composer
-  const renderPass = new RenderPass(scene, camera);
-  const effectPass = new EffectPass(camera, bloomEffect);
-  composer.setSize(window.innerWidth, window.innerHeight);
-  composer.addPass(renderPass);
-  composer.addPass(effectPass);
-  effectPass.enabled = true;
-  renderPass.enabled = true;
 
   // Clock
   clock = new THREE.Clock();
@@ -95,7 +67,6 @@ function init() {
     document.body.appendChild(stats.dom);
   }
   
-
   // Create Scene Elements
   // Ambient Light
   const ambientLight = new THREE.AmbientLight(0xffffff);
@@ -282,6 +253,7 @@ function init() {
     });
 
     pageLoad = Date.now();
+    animate(); // Begin!
   });
 }
 
@@ -293,7 +265,6 @@ function animate() {
 
   // Planets Stuff
   solarSystem.getPlanets().forEach(planet => {
-    // Animate planet positions
     planet.planetMesh.position.x = Math.cos(time * planet.orbitSpeed) * planet.orbitRadius;
     planet.planetMesh.position.z = Math.sin(time * planet.orbitSpeed) * planet.orbitRadius;
   });
@@ -307,8 +278,6 @@ function animate() {
     hand.position.y = 15 + Math.sin(time * 40) * 1.5;
     hand.position.x = handTarget.position.x + 1;
     hand.position.z = handTarget.position.z - 5;
-    // hand.position.x = 0;
-    // hand.position.z = 0;
   }
   if (solarSystem.isFocused()) {
     hand.visible = false;
@@ -326,8 +295,7 @@ function animate() {
   cameraManager.update(solarSystem);
   textManager.update(solarSystem);
 
-  // renderer.render(scene, camera);
-  composer.render();
+  renderer.render(scene, camera);
 }
 
 function addStar() {
@@ -340,7 +308,6 @@ function addStar() {
   ];
 
   star.position.set(x, y, z);
-  bloomEffect.selection.add(star);
   scene.add(star);
 }
 
@@ -352,5 +319,4 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setSize(width, height);
-  composer.setSize(width, height);
 }
