@@ -87,7 +87,7 @@ function init() {
 
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - Earth');
     }, function (error) { // called when loading has errors
       reject("Failed loading Earth Planet: " + error);
       return;
@@ -122,7 +122,7 @@ function init() {
       handTarget = gltf.scene;
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - About');
     }, function (error) { // called when loading has errors
       reject("Failed loading About Planet: " + error);
       return;
@@ -151,7 +151,7 @@ function init() {
 
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - Skills');
     }, function (error) { // called when loading has errors
       reject("Failed loading Skills Planet: " + error);
       return;
@@ -182,7 +182,7 @@ function init() {
 
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - Projects');
     }, function (error) { // called when loading has errors
       reject("Failed loading Projects Planet: " + error);
       return;
@@ -210,7 +210,7 @@ function init() {
       astroid = gltf.scene;
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - Contact Me');
     }, function (error) { // called when loading has errors
       reject("Failed loading Contact Me Planet: " + error);
       return;
@@ -227,7 +227,7 @@ function init() {
 
       resolve();
     }, function (xhr) { // Called during execution
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded - Hand');
     }, function (error) { // called when loading has errors
       reject("Failed loading Pointer Hand: " + error);
       return;
