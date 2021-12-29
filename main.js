@@ -69,7 +69,7 @@ function init() {
   
   // Create Scene Elements
   // Ambient Light
-  const ambientLight = new THREE.AmbientLight(0xffffff);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 2);
 
   // Pointer Hand
   hand = new THREE.Mesh();
@@ -192,7 +192,7 @@ function init() {
   // Contact Me Planet
   planetPromises.push(new Promise((resolve, reject) => {
     loader.load('models/Asteroid1.glb', function (gltf) { // Called after success
-      gltf.scene.scale.set(0.5, 0.5, 0.5);
+      gltf.scene.scale.set(0.3, 0.3, 0.3);
       gltf.scene.rotateX(THREE.MathUtils.degToRad(-20));
       gltf.scene.rotateY(THREE.MathUtils.degToRad(-20));
 
@@ -241,7 +241,7 @@ function init() {
     Array(650).fill().forEach(addStar); // Stars
     solarSystem.getPlanets().forEach(planet => {
       scene.add(planet.planetMesh);
-      scene.add(planet.orbit);
+      // scene.add(planet.orbit);
       interactionManager.add(planet.planetMesh);
     });
     scene.add(hand);
