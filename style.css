@@ -14,14 +14,21 @@ html, body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-auto-rows: minmax(5vh, auto);
-  opacity:0;
-  pointer-events: none;
+  opacity: 0;
   position: absolute;
+}
+
+.clickable {
+  pointer-events: auto;
+}
+
+.unclickable {
+  pointer-events: none;
 }
 
 .contentTitle {
   font-size: 6vh;
-  color: #b0b0b0;
+  color: #008334;
   z-index: 100;
   grid-column: 1/3;
   grid-row: 1;
@@ -32,7 +39,7 @@ html, body {
 }
 
 .contentText {
-  color: #b0b0b0;
+  color: #008334;
   z-index: 100;
   font-size: 3vh;
   grid-column: 1/3;
@@ -45,7 +52,7 @@ html, body {
 
 #title {
   font-size: 8vh;
-  color: #b0b0b0;
+  color: #008334;
   position: absolute;
   top: 10px;
   width: 100%;
@@ -53,7 +60,7 @@ html, body {
   z-index: 100;
   display: block;
   font-family: 'Orbitron', sans-serif;
-  pointer-events: none
+  /* pointer-events: none */
   /* animation-name: float;
   animation-direction: alternate;
   animation-duration: 4s;
@@ -63,25 +70,38 @@ html, body {
 
 #backArrow {
   font-size: 10vh;
-  color: #b0b0b0;
+  color: #008334;
   position: absolute;
   top: 0px;
   left: 10px;
-  width: 100%;
+  width: 8vh;
   text-align: left;
   z-index: 100;
   display: block;
   font-family: 'Noto Sans KR', sans-serif;
   cursor: pointer;
-  pointer-events: none;
+  /* pointer-events: none; */
   opacity: 0;
 }
 
-/* #hi {
-  animation-name: fadeInDown;
-  animation-duration: 5s;
-  animation-timing-function: ease-in-out;
-} */
+#projectsText {
+  font-size: 2.3vh;
+}
+
+.GitHubImage {
+  width: 8vh;
+  height: 8vh;
+}
+
+.GrabCadImage {
+  /* width: 5vh; */
+  height: 8vh;
+}
+
+.LinkedInImage {
+  width: 8vh;
+  height: 8vh;
+}
 
 /* https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting */
 .noselect {

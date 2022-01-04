@@ -106,14 +106,18 @@ class TextManager {
 
         function fadeOutToFadeIn(e) {
             e.classList.remove("fadeOut")
+            e.classList.remove("unclickable")
             void e.offsetWidth; // This is sadly necessary to trigger a reflow...
             e.classList.add("fadeIn")
+            e.classList.add("clickable")
         }
 
         function fadeInToFadeOut(e) {
             e.classList.remove("fadeIn")
+            e.classList.remove("clickable")
             void e.offsetWidth; // This is sadly necessary to trigger a reflow...
             e.classList.add("fadeOut")
+            e.classList.add("unclickable")
         }
     }
 }

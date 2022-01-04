@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <!-- <link rel="icon" type="image/svg+xml" href="favicon.svg" /> -->
     <link rel="stylesheet" type="text/css" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jacob Ellsworth</title>
@@ -15,8 +15,8 @@
   </head>
   <body id="body">
     <canvas id="background"></canvas>
-    <div id="div" class="noselect"><h1 id="title">Hi, my name is Jacob</h1></div>
-    <div id="aboutWrapper" class="contentWrapper">
+    <div id="div"><h1 id="title">Hi, my name is Jacob</h1></div>
+    <div id="aboutWrapper" class="contentWrapper unclickable">
       <div id="aboutTitle" class="contentTitle">About Me</div>
       <div id="aboutText" class="contentText">
         My name is Jacob. I am an Engineering student at Arizona State University and though I study Computer Science,
@@ -24,41 +24,58 @@
         I love to work on projects both on a computer and in a machine shop, learn new things, go rock climbing, sing in my choir, hang out with my friends, and perfect my chocolate chip cookie recipe.
       </div>
     </div>
-    <div id="skillsWrapper" class="contentWrapper">
+    <div id="skillsWrapper" class="contentWrapper unclickable">
       <div id="skillsTitle" class="contentTitle">Skills</div>
       <div id="skillsText" class="contentText">
         <ul>
           <li>Programming Languages:
             <ul>
-              <li>Java/C/C++</li>
+              <li>Java</li>
+              <li>C/C++</li>
               <li>Python</li>
+              <li>Assembly</li>
             </ul>
           </li>
           <li>Git/Github</li>
           <li>VIM</li>
+          <li><a href="https://cv.virtualtester.com/qr/?b=SLDWRKS&i=C-95UA73HBLD" target="_blank" rel="noopener noreferrer">CSWA (Certified SolidWorks Associate)</a></li>
           <li>Full Stack Web Development</li>
+          <li>CNC Mill and Router Operation</li>
           <li>Industrial Shop Tools</li>
-          <li><a href="https://cv.virtualtester.com/qr/?b=SLDWRKS&i=C-95UA73HBLD">SolidWorks CSWA (Certified SolidWorks Associate)</a></li>
         </ul> 
       </div>
     </div>
-    <div id="projectsWrapper" class="contentWrapper">
+    <div id="projectsWrapper" class="contentWrapper unclickable">
       <div id="projectsTitle" class="contentTitle">Projects</div>
       <div id="projectsText" class="contentText">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, ad veniam voluptatibus corporis autem
-        fuga blanditiis aut dolores explicabo sapiente distinctio
-        quod at obcaecati numquam modi magnam exercitationem temporibus illum!
+        <a href="https://github.com/DarthJake" target="_blank" rel="noopener noreferrer"><img src="./images/GitHub.svg" alt="Github - DarthJake" class="GitHubImage"></a>
+        <a href="https://workbench.grabcad.com/workbench/projects/gc2VPe0OqxbiDSDMZa67rC_4syavGQJDdNMBYbGJAulhNa#/space/gcMBduFVPc8mGS9kyeoVKOxLGNAXB4AgVc_KIkugSC5-bl" target="_blank" rel="noopener noreferrer"><img src="./images/GrabCad.jpg" alt="GrabCad - jacob.ellsworth-1" class="GrabCadImage"></a>
+        <br>
+        <ul>
+          <a href="https://github.com/DarthJake/Gamazon" target="_blank" rel="noopener noreferrer"><li>Gamazon:</li></a>
+          <ul>
+            <li>A mock storefront. Add imaginary items to your cart and "purchase" them. Vendors can add new items.</li>
+          </ul>
+          <a href="https://workbench.grabcad.com/workbench/projects/gc2VPe0OqxbiDSDMZa67rC_4syavGQJDdNMBYbGJAulhNa#/space/gcMBduFVPc8mGS9kyeoVKOxLGNAXB4AgVc_KIkugSC5-bl/link/3202927" target="_blank" rel="noopener noreferrer"><li>Nut Puzzle:</li></a>
+          <ul>
+            <li>A physical puzzle inspired by the machinist's puzzle lock.</li>
+          </ul>
+          <a href="https://workbench.grabcad.com/workbench/projects/gc2VPe0OqxbiDSDMZa67rC_4syavGQJDdNMBYbGJAulhNa#/space/gcMBduFVPc8mGS9kyeoVKOxLGNAXB4AgVc_KIkugSC5-bl/link/3202945" target="_blank" rel="noopener noreferrer"><li>Soldering Fuming Absorber:</li></a>
+          <ul>
+            <li>A Fume Absorber so you can breath while soldering. Made specifically for laser cutting fabrication.</li>
+          </ul>
+        </ul>
       </div>
     </div>
-    <div id="contactMeWrapper" class="contentWrapper">
+    <div id="contactMeWrapper" class="contentWrapper unclickable">
       <div id="contactMeTitle" class="contentTitle">Contact Me</div>
       <div id="contactMeText" class="contentText">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, ad veniam voluptatibus corporis autem
-        fuga blanditiis aut dolores explicabo sapiente distinctio
-        quod at obcaecati numquam modi magnam exercitationem temporibus illum!
+        <a href="https://www.linkedin.com/in/jacob-ellsworth/" target="_blank" rel="noopener noreferrer"><img src="./images/LinkedIn.svg" alt="LinkedIn - Jacob Ellsworth" class="LinkedInImage"></a>
+        <br>
+        <p>My contact information can be found on my LinkedIn Profile from the link above.</p>
       </div>
     </div>
-    <div id="backArrow" class="noselect"><span>&#8598;</span></div>
+    <div id="backArrow"><span>&#8598;</span></div>
     <script type="module" src="./main.js"></script>
   </body>
 </html>
