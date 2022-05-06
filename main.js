@@ -4,7 +4,7 @@
 // import Stats from 'three/examples/jsm/libs/stats.module'
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.131.3/build/three.module.js';
-import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive';
+import { InteractionManager } from 'https://cdn.skypack.dev/three.interactive@1.1.0';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/loaders/GLTFLoader.js';
 import Stats from 'https://cdn.skypack.dev/three@0.131.3/examples/jsm/libs/stats.module'
 
