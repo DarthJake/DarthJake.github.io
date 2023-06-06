@@ -7,7 +7,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^2.4.4"
+    "vite": "^2.9.16"
   },
   "dependencies": {
     "postprocessing": "^6.23.1",
